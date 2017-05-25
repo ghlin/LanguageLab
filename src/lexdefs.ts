@@ -10,7 +10,7 @@ export const alphas    = lowers + uppers;
 export const alphaNums = alphas + numbers;
 
 export const leadingSyms   = '<>/~-_+=:';
-export const followingSyms = `'@&^-_.#`;
+export const followingSyms = `'@&^-_.#<>/~=?`;
 
 export const leadingChrs   = alphas + leadingSyms;
 export const followingChrs = alphaNums + followingSyms;
@@ -73,15 +73,22 @@ export const identifierP = P
   .str;
 
 
+const escapeSpecialKey = (x: string, to: string = x) =>
+  P.string('\\' + x).map(_ => to);
+
 // String literal
-const escapeP = P.string('\\"').map(_ => '"');
+const escapeP = escapeSpecialKey('"')
+  .or(          escapeSpecialKey('$'))
+  .or(          escapeSpecialKey('\\'))
+  .or(          escapeSpecialKey('n', '\n'))
+  .or(          escapeSpecialKey('r', '\r'))
+  .or(          escapeSpecialKey('t', '\t'));
+
 const textP   = P.noCharOf('"');
 
 const strLitContentP = escapeP.or(textP).many();
 
+// TODO: string interpolation 2017-05-25 22:12:20
 export const stringLiteralP = strLitContentP
   .between(doubleQuoteP, doubleQuoteP);
-
-
-
 

@@ -12,14 +12,14 @@ export class Expr {
   }
 }
 
-export class Pattern {
-  readonly t = 'Pattern';
+export class Layer {
+  readonly t = 'Layer';
 
   constructor( readonly id: string
-             , readonly body: Expr | Pattern[]) { }
+             , readonly body: Expr | Layer[]) { }
 
-  static of(id: string, body: Expr | Pattern[]) {
-    return new Pattern(id, body);
+  static of(id: string, body: Expr | Layer[]) {
+    return new Layer(id, body);
   }
 
   toString() : string {

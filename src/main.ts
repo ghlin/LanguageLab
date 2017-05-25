@@ -1,4 +1,4 @@
-import p from './grammar';
+import layerP from './layerP';
 import * as Parjs from 'parjs';
 
 const src =
@@ -49,9 +49,17 @@ o {
 
 };
 q "yes"
+
+
+use-awesome-weapon= #t
+
+import module /root/undefined/fantasy/object from "V"
+
+test-string-escaping= "\n\n[\t]\$[\\]"
+
 `;
 
-const r = p.parse(src);
+const r = layerP.parse(src);
 
 if (r.kind == Parjs.ReplyKind.OK) {
   for (let v of r.value) {
