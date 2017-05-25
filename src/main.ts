@@ -1,4 +1,4 @@
-import p from './grammer';
+import p from './grammar';
 import * as Parjs from 'parjs';
 
 const src =
