@@ -4,8 +4,11 @@
   , "removeComments": false
   , "sourceMap": true
   , "moduleResolution": "node"
+  , "noImplicitAny": true
+  , "strictNullChecks": true
+  , "suppressImplicitAnyIndexErrors": true
   , "target": "es6"
   , "lib": [ "es6" ]
   },
-  "exclude": [ "node_modules" ]
+  "include": [ "src/**/*.ts" ]
 }

@@ -14,7 +14,9 @@ const buildPattern = ([id, ...names]: string[], body: Expr | Pattern[]) => {
   return names.reduce((body, t) => Pattern.of(t, [body]), Pattern.of(id, body));
 }
 
-const [ pwP, rP, bP ] = [
+const [ pwP, rP, bP ] : [ () => Parjs.LoudParser<Pattern>
+                        , () => Parjs.LoudParser<Expr| Pattern[]>
+                        , () => Parjs.LoudParser<Pattern[]> ] = [
   () => { // pw
     return identifierListP.then(T.spaceP.many(1).q)
       .thenChoose((idChain) => rP().map(

@@ -22,7 +22,7 @@ export class Pattern {
     return new Pattern(id, body);
   }
 
-  toString() {
+  toString() : string {
     const tail = Array.isArray(this.body)
       ? this.body.map(x => x.toString()).join('; ')
       : this.body.toString();
