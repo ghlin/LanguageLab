@@ -12,5 +12,14 @@
     "indent-string": "^3.1.0",
     "pad": "^1.1.0",
     "parjs": "^0.5.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-logger": "0.0.2",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-typescript": "^3.1.6",
+    "run-sequence": "^1.2.2",
+    "typescript": "^2.3.2"
   }
 }
