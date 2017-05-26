@@ -53,11 +53,15 @@ q "yes"
 
 use-awesome-weapon= #t
 
-import module /root/undefined/fantasy/object from "V"
+import /root/undefined/fantasy/object from "V"
 
-test-string-escaping= "\n\n[\t]\$[\\]"
+include "some"
 
+test-string-escaping= "\\n\\n[\\t]\\$[\\\\]"
+
+include "some.ll"
 `;
+// this is comment
 
 const r = layerP.parse(src);
 
@@ -66,6 +70,6 @@ if (r.kind == Parjs.ReplyKind.OK) {
     console.log(v.toString());
   }
 } else {
-  console.log(r);
+  console.log(r.toString());
 }
 

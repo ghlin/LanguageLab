@@ -1,24 +1,24 @@
-import * as Parjs        from 'parjs';
-import * as T            from './lexdefs';
-import { Expr, Layer }   from './tree';
+import * as Parjs          from 'parjs';
+import * as T              from './lexdefs';
+import { Literal, Layer }  from './tree';
 
 const P = Parjs.Parjs;
 
 const trueP           = P.string('#t').map(_ => '#true');
 const falseP          = P.string('#f').map(_ => '#false');
 const truthP          = trueP.soft.or(falseP);
-const literalP        = P.int().or(P.float(), T.stringLiteralP, truthP).str.map(Expr.of);
+const literalP        = P.int().or(P.float(), T.stringLiteralP, truthP).str.map(Literal.of);
 const identifierListP = T.identifierP.manySepBy(T.spaceP.many(1));
 
 const end         = P.anyCharOf(';\n');
 const endQ        = end.many(1).q;
 
-const buildLayer = ([id, ...names]: string[], body: Expr | Layer[]) => {
+const buildLayer = ([id, ...names]: string[], body: Literal | Layer[]) => {
   return names.reduce((body, t) => Layer.of(t, [body]), Layer.of(id, body));
 }
 
 const [ pwP, rP, bP ] : [ () => Parjs.LoudParser<Layer>
-                        , () => Parjs.LoudParser<Expr| Layer[]>
+                        , () => Parjs.LoudParser<Literal| Layer[]>
                         , () => Parjs.LoudParser<Layer[]>       ] =
 [
   () => { // pw
