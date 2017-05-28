@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "colors": "^1.1.2",
     "immutable": "^3.8.1",
     "indent-string": "^3.1.0",
     "pad": "^1.1.0",
-    "parjs": "^0.5.0"
+    "parjs": "^0.5.0",
+    "space-lift": "^0.2.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
