@@ -233,3 +233,10 @@ log(`F 1 = ${tryE(App(T.F, Lit("1")))}`);
 
 log(`cons 1 2= ${App(App(consE, Lit("1")), Lit("2"))}`);
 log(`cons 1 2= ${tryE(App(App(consE, Lit("1")), Lit("2")))}`);
+
+// omega = (\x. x x) (\x. x x)
+const omega = App( Lam(Var("x"), App(Var("x"), Var("x")))
+                 , Lam(Var("x"), App(Var("x"), Var("x"))));
+
+log(`omega = ${omega}`);
+log(`omega = ${tryE(omega)}`);
