@@ -1,10 +1,51 @@
 import * as T from './tree';
 import * as U from 'space-lift';
 import * as I from 'immutable';
+import "colors";
 
 const log = console.log;
 
 type Expr = T.Expr;
+
+const color = (x: string, c: string): string => (x as any)[c];
+
+function highlight(e: Expr, hi: T.Application): string {
+  if (e == hi) {
+    const le = e.lambda.toString();
+    const l = (  e.lambda instanceof T.Variable
+              || e.lambda instanceof T.Application)
+      ? le : `(${le})`;
+
+    const re = e.x.toString();
+    const r = (  e.x instanceof T.Variable
+              || e.x instanceof T.Literal)
+      ? re : `(${re})`;
+
+    return `${color(l, 'red')} ${color(r, 'blue')}`;
+  }
+
+  switch (e.t) {
+  case 'Literal':
+  case 'Variable':
+    return e.toString();
+
+  case 'Application':
+    const l = (  e.lambda instanceof T.Variable
+              || e.lambda instanceof T.Application)
+      ? highlight(e.lambda, hi)
+      : `(${highlight(e.lambda, hi)})`;
+
+    const r = (  e.x instanceof T.Variable
+              || e.x instanceof T.Literal)
+      ? highlight(e.x, hi)
+      : `(${highlight(e.x, hi)})`;
+
+    return `${l} ${r}`;
+  case 'LambdaAbstraction':
+    return `λ${e.x}. ${highlight(e.body, hi)}`;
+  }
+  return e.toString();
+}
 
 /*
  *
@@ -25,8 +66,8 @@ type Expr = T.Expr;
  */
 type M = U.Result<string, Expr>;
 
-function diveLeftOut(r: Expr): U.Result<string, [ T.Application, T.LambdaAbstraction ]> {
-  const left = (r as T.Application).lambda;
+function diveLeftOut(r: T.Application): U.Result<string, [ T.Application, T.LambdaAbstraction ]> {
+  const left = r.lambda;
 
   if (left.t === 'Application')
     return diveLeftOut(left);
@@ -72,19 +113,20 @@ function copyTree(r: Expr, at: Expr, to: Expr): Expr {
   return r;
 }
 
-function reduceLeftOut(r: Expr /* very root */): M {
+function reduceLeftOut(r: T.Application /* very root */): M {
   return diveLeftOut(r).map(([ p, h ]) => {
     /*
      *
      *           @
      *          / \
-     *         @  E1
+     *    p -> @  E1
      *        / \
-     *  # -> λ E2
+     *  h -> λ E2
      *      / \
      *     x  E3
      *
      */
+    log(`highlight: ${highlight(r, p)}`);
     const hs = subst(h.body, h.x, p.x);
     return copyTree(r, p, hs);
   });
@@ -145,8 +187,6 @@ function tryE(r: Expr, n: number = 1000): M {
   if (n === 0)
     return U.Err(`tryE: max try`)
 
-  log(`tryE: step: ${r}`);
-
   if (r.t === 'Application')
     return step(r).flatMap((e): M => tryE(e, n - 1));
   else
@@ -155,10 +195,10 @@ function tryE(r: Expr, n: number = 1000): M {
 
 const r = tryE(testE);
 
-console.log(`cons = ${consE.toString()}`);
-console.log(`car  = ${carE.toString()}`);
-console.log(`cdr  = ${cdrE.toString()}`);
-console.log(`r = ${r.toString()}`);
+log(`cons = ${consE.toString()}`);
+log(`car  = ${carE.toString()}`);
+log(`cdr  = ${cdrE.toString()}`);
+log(`r = ${r.toString()}`);
 
 const testE1 = App( carE
                   , App( App( consE
@@ -190,3 +230,6 @@ log(`shouldFail = ${tryE(shouldFail)}`);
 
 log(`F 1 = ${App(T.F, Lit("1"))}`);
 log(`F 1 = ${tryE(App(T.F, Lit("1")))}`);
+
+log(`cons 1 2= ${App(App(consE, Lit("1")), Lit("2"))}`);
+log(`cons 1 2= ${tryE(App(App(consE, Lit("1")), Lit("2")))}`);
