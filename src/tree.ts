@@ -43,9 +43,9 @@ export class Layer {
   }
 }
 
-type Expr = Literal | Variable | Constructor | Application | LambdaAbstraction;
+export type Expr = Literal | Variable | Constructor | Application | LambdaAbstraction;
 
-class Variable {
+export class Variable {
   readonly t = 'Variable';
 
   constructor(readonly id: string) { }
@@ -139,7 +139,7 @@ export class Application {
 
 
 // Y = \f. (\x. f (x x)) (\x. f (x x))
-const Y =
+export const Y =
   LambdaAbstraction.of( Variable.of('f')
                       , Application.of( LambdaAbstraction.of( Variable.of('x')
                                                             , Application.of( Variable.of("f")
@@ -153,8 +153,8 @@ const Y =
 console.log(`Y = ${Y.toString()}`);
 
 // F = Y \f. \n. if (=0 n) 1 (f (-1 n))
-const F =
-  Application.of( Variable.of("Y")
+export const F =
+  Application.of( Y
                 , LambdaAbstraction.of( Variable.of("f")
                                       , LambdaAbstraction.of( Variable.of("n")
                                                             , Application.of( Application.of( Application.of( Variable.of("if")

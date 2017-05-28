@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "immutable": "^3.8.1",
     "indent-string": "^3.1.0",
     "pad": "^1.1.0",
     "parjs": "^0.5.0"

@@ -73,3 +73,5 @@ if (r.kind == Parjs.ReplyKind.OK) {
   console.log(r.toString());
 }
 
+require("./eval");
+
