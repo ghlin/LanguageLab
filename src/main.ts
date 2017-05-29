@@ -63,6 +63,7 @@ include "some.ll"
 `;
 // this is comment
 
+/*
 const r = layerP.parse(src);
 
 if (r.kind == Parjs.ReplyKind.OK) {
@@ -72,6 +73,8 @@ if (r.kind == Parjs.ReplyKind.OK) {
 } else {
   console.log(r.toString());
 }
+*/
 
-require("./eval");
+//require("./eval");
+require("./reduce-tree");
 
