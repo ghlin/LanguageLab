@@ -3,10 +3,8 @@ import * as U from 'space-lift';
 import * as I from 'immutable';
 import "colors";
 
-const log = console.log;
-
-type Expr = T.Expr;
-
+type Expr   = T.Expr;
+const log   = console.log;
 const color = (x: string, c: string): string => (x as any)[c];
 
 function highlight(e: Expr, hi: T.Application): string {
@@ -41,9 +39,11 @@ function highlight(e: Expr, hi: T.Application): string {
       : `(${highlight(e.x, hi)})`;
 
     return `${l} ${r}`;
+
   case 'LambdaAbstraction':
     return `λ${e.x}. ${highlight(e.body, hi)}`;
   }
+
   return e.toString();
 }
 
@@ -82,12 +82,15 @@ function diveLeftOut(r: T.Application): U.Result<string, [ T.Application, T.Lamb
 
 function subst(m: Expr, v: T.Variable, e: Expr): T.Expr {
   switch (m.t) {
-  case 'Literal':  return m;
+  case 'Literal':
+    return m;
+
   case 'Variable':
     if (m.id === v.id)
       return e;
     else
       return m;
+
   case 'Application':
     return T.Application.of( subst(m.lambda, v, e)
                            , subst(m.x, v, e));
@@ -98,6 +101,7 @@ function subst(m: Expr, v: T.Variable, e: Expr): T.Expr {
       return T.LambdaAbstraction.of( m.x
                                    , subst(m.body, v, e));
   }
+
   log(`subst: ??? ${e.t}: ${e}`);
   return e;
 }
@@ -195,35 +199,29 @@ function tryE(r: Expr, n: number = 1000): M {
 
 const r = tryE(testE);
 
-log(`cons = ${consE.toString()}`);
-log(`car  = ${carE.toString()}`);
-log(`cdr  = ${cdrE.toString()}`);
-log(`r = ${r.toString()}`);
+log(`cons = ${consE}`);
+log(`car  = ${carE}`);
+log(`cdr  = ${cdrE}`);
+log(`r    = ${r}`);
 
-const testE1 = App( carE
-                  , App( App( consE
-                            , consE)
-                       , Lit("1")));
+const testE1 = App(carE, App( App(consE, consE)
+                            , Lit("1")));
 
 log(`testE1 = ${testE1}`);
 log(`testE1 = ${tryE(testE1)}`);
 
-const testE2 = App( carE
-                  , App( App( testE1
-                            , Lit("Hello"))
-                       , Lit("World")));
+const testE2 = App(carE, App( App(testE1, Lit("Hello"))
+                            , Lit("World")));
 
 log(`testE2 = ${testE2}`);
 log(`testE2 = ${tryE(testE2)}`);
 
 // cdr (car (cons cons 1) "hello" "World")
-const shouldFail = App( cdrE
-                      , App( App( App( cdrE
-                                     , App( App( consE
-                                               , consE)
-                                          , Lit("1")))
-                                , Lit("Hello"))
-                           , Lit("World")));
+const shouldFail = App(cdrE, App( App( App( cdrE
+                                          , App( App(consE, consE)
+                                               , Lit("1")))
+                                     , Lit("Hello"))
+                                , Lit("World")));
 
 log(`shouldFail = ${shouldFail}`);
 log(`shouldFail = ${tryE(shouldFail)}`);
@@ -231,8 +229,8 @@ log(`shouldFail = ${tryE(shouldFail)}`);
 log(`F 1 = ${App(T.F, Lit("1"))}`);
 log(`F 1 = ${tryE(App(T.F, Lit("1")))}`);
 
-log(`cons 1 2= ${App(App(consE, Lit("1")), Lit("2"))}`);
-log(`cons 1 2= ${tryE(App(App(consE, Lit("1")), Lit("2")))}`);
+log(`cons 1 2 = ${App(App(consE, Lit("1")), Lit("2"))}`);
+log(`cons 1 2 = ${tryE(App(App(consE, Lit("1")), Lit("2")))}`);
 
 // omega = (\x. x x) (\x. x x)
 const omega = App( Lam(Var("x"), App(Var("x"), Var("x")))
@@ -240,3 +238,4 @@ const omega = App( Lam(Var("x"), App(Var("x"), Var("x")))
 
 log(`omega = ${omega}`);
 log(`omega = ${tryE(omega)}`);
+
