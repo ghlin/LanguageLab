@@ -95,7 +95,7 @@ function evalM(e: Expression): ExprM {
     return Ok(e);
 }
 
-function tryM(e: Expression, limit: number = 1000): ExprM {
+export function tryM(e: Expression, limit: number = 1000): ExprM {
   log(`tryM: ${e.t}: ${e}`);
   if (limit === 0)
     return Err(`tryM: max try`);
@@ -117,7 +117,7 @@ const ifProc = ([ testE, thenE, elseE ]: Expression[]): ExprM => {
     return Ok(elseE);
 }
 
-const if_ = builtin('!--', ifProc, 'if');
+export const if_ = builtin('!--', ifProc, 'if');
 const e1 = app( app( app(if_, bool(true))
                    , str("yes"))
               , str("no"));
@@ -139,7 +139,7 @@ const eqProc = ([ lhs, rhs ]: Expression[]): ExprM => {
     return Err(`eq: don't know how to compare ${lhs.t}`);
 }
 
-const eq = builtin('!!', eqProc, '=');
+export const eq = builtin('!!', eqProc, '=');
 
 const ifE = (testE: Expression, thenE: Expression, elseE: Expression) => {
   return app(app(app(if_, testE), thenE), elseE);

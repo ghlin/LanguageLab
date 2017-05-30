@@ -10,7 +10,7 @@ export const alphas    = lowers + uppers;
 export const alphaNums = alphas + numbers;
 
 export const leadingSyms   = '<>/~-_+=:';
-export const followingSyms = `'@&^-_.#<>/~=?`;
+export const followingSyms = `'@&^-_#<>/~=?`;
 
 export const leadingChrs   = alphas + leadingSyms;
 export const followingChrs = alphaNums + followingSyms;

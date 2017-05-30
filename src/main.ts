@@ -76,5 +76,24 @@ if (r.kind == Parjs.ReplyKind.OK) {
 */
 
 //require("./eval");
-require("./reduce-tree");
+import * as e from "./reduce-tree";
+import p from './s-exprP';
+
+const sexpList = [ `\\x.x`
+                 , `#t`
+                 , `\\x.\\y.(== x y)` ];
+
+for (const sexp of sexpList) {
+  const r = p.parse(sexp);
+
+  if (r.kind == Parjs.ReplyKind.OK) {
+    const exp = r.value;
+
+    console.log(`in  = ${exp}`);
+    console.log(`out = ${e.tryM(exp)}`);
+  } else {
+    console.log(r.toString());
+  }
+}
+
 
