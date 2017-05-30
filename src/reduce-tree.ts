@@ -72,8 +72,8 @@ function reduce(e: Application): ExprM {
 
       const es = stack.slice(0, r.pattern.length);
       const rs = es.map((a: Application, i) => {
-        if (r.pattern[i]) // strict at i
-          return evalM(a.x);
+        if (r.pattern[i])                { log(`eval: ${a.x}`);
+          return tryM(a.x);              }
         else
           return Ok(a.x);
       });
@@ -83,7 +83,8 @@ function reduce(e: Application): ExprM {
       if (errs.length !== 0)
         return Err(errs.join('\n'));
 
-      return r.procedure(rs.map(x => (x.get() as Expression)));
+      return r.procedure(rs.map(x => (x.get() as Expression)))
+        .flatMap(s => Ok(substTree(e, stack[rs.length - 1], s)));
     }
   });
 }
@@ -106,40 +107,16 @@ export function tryM(e: Expression, limit: number = 1000): ExprM {
     return Ok(e);
 }
 
-const ifProc = ([ testE, thenE, elseE ]: Expression[]): ExprM => {
-  if (testE.t !== 'BooleanValue')
-    return Err(`if testE thenE elseE: testE should be of type 'BooleanValue', `
-      +        `got ${testE.t}: ${testE}`);
+import * as b from './builtins';
+const { if_, eq } = b;
 
-  if (testE.value)
-    return Ok(thenE);
-  else
-    return Ok(elseE);
-}
 
-export const if_ = builtin('!--', ifProc, 'if');
 const e1 = app( app( app(if_, bool(true))
                    , str("yes"))
               , str("no"));
 
 log(`e1 = ${e1}`);
 log(`e1 = ${tryM(e1)}`);
-
-
-const eqProc = ([ lhs, rhs ]: Expression[]): ExprM => {
-  if (lhs.t !== rhs.t) {
-    return Err(`eq: type mismatch, lhs = ${lhs.t}, rhs = ${rhs.t}`
-      + '\n' + `lhs: ${lhs}`
-      + '\n' + `rhs: ${rhs}`);
-  }
-
-  if (lhs.t.endsWith('Value'))
-    return Ok(bool((lhs as any).value === (rhs as any).value));
-  else
-    return Err(`eq: don't know how to compare ${lhs.t}`);
-}
-
-export const eq = builtin('!!', eqProc, '=');
 
 const ifE = (testE: Expression, thenE: Expression, elseE: Expression) => {
   return app(app(app(if_, testE), thenE), elseE);

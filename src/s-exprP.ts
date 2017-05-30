@@ -1,7 +1,7 @@
 import * as Parjs   from 'parjs';
 import * as T       from './lexdefs';
 import * as X       from './syntax-tree';
-import * as E       from './reduce-tree';
+import probe        from './builtins';
 
 const P = Parjs.Parjs;
 
@@ -13,25 +13,19 @@ const truthP = trueP.soft.or(falseP);
 const numLitP = P.int().map(X.num);
 const strLitP = T.stringLiteralP.str.map(X.str);
 
-const identifierP = T.identifierP
-  .map(id => {
-    switch (id) {
-    case 'if': return E.if_;
-    case '==': return E.eq;
-    default: return X.sym(id);
-    }
-  });
+const identifierP  = T.identifierP.map(X.sym);
+const idOrBuiltinP = T.identifierP.map(probe);
 
 const [ lambdaP, applicationP , expressionP ] : [ () => Parjs.LoudParser<X.LambdaAbstraction>
                                                 , () => Parjs.LoudParser<X.Application>
                                                 , () => Parjs.LoudParser<X.Expression> ] =
 [ () => {
     return P.string('\\').q
-      .then(T.identifierP)
+      .then(identifierP)
       .then(T.spacesQ.then(P.string('.')))
       .thenChoose(([id, _]) => {
         return expressionP().map((expression) => {
-          return X.lam(X.sym(id), expression);
+          return X.lam(id, expression);
       });
     })
   }
@@ -46,7 +40,7 @@ const [ lambdaP, applicationP , expressionP ] : [ () => Parjs.LoudParser<X.Lambd
       }).then(T.closePrQ);
   }
 , () => {
-    return truthP.soft.or(numLitP.soft, strLitP.soft, identifierP.soft, applicationP().soft, lambdaP());
+    return truthP.soft.or(numLitP.soft, strLitP.soft, idOrBuiltinP.soft, applicationP().soft, lambdaP());
   } ];
 
 export const parseS = expressionP();

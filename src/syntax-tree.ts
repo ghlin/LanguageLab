@@ -120,7 +120,7 @@ export class Builtin {
   }
 
   toString() {
-    return `<builtin:${this.name}>`
+    return `${this.name}`
   }
 
   private static mapPattern(pattern: string): boolean[] {
