@@ -19,7 +19,7 @@ const buildLayer = ([id, ...names]: string[], body: Literal | Layer[]) => {
 
 const [ pwP, rP, bP ] : [ () => Parjs.LoudParser<Layer>
                         , () => Parjs.LoudParser<Literal| Layer[]>
-                        , () => Parjs.LoudParser<Layer[]>       ] =
+                        , () => Parjs.LoudParser<Layer[]>       ] = 
 [
   () => { // pw
     return identifierListP.then(T.spaceP.many(1).q)
@@ -39,7 +39,7 @@ const [ pwP, rP, bP ] : [ () => Parjs.LoudParser<Layer>
   }
 ];
 
-export const layerP  = pwP();
+export const layerP = pwP();
 
 const layersP = T.spaceEolsQ.then(layerP
   .manySepBy(endQ.then(P.eof).not.then(endQ)))

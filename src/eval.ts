@@ -10,12 +10,12 @@ const color = (x: string, c: string): string => (x as any)[c];
 function highlight(e: Expr, hi: T.Application): string {
   if (e == hi) {
     const le = e.lambda.toString();
-    const l = (  e.lambda instanceof T.Variable
+    const l  = (  e.lambda instanceof T.Variable
               || e.lambda instanceof T.Application)
       ? le : `(${le})`;
 
     const re = e.x.toString();
-    const r = (  e.x instanceof T.Variable
+    const r  = (  e.x instanceof T.Variable
               || e.x instanceof T.Literal)
       ? re : `(${re})`;
 
