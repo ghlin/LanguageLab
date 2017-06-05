@@ -44,6 +44,11 @@ gulp.task('start', () =>
           , ext: 'js json'
           , env: nodemonEnv }));
 
+gulp.task('node-test', () =>
+  nodemon({ script: `${dist}/test`
+          , ext: 'js json'
+          , env: nodemonEnv }));
+
 gulp.task('watch', ['compile'], () => {
   gulp.watch('src/**/*.ts', ['compile']);
 });
@@ -54,5 +59,9 @@ gulp.task('build', (callback) => {
 
 gulp.task('default', () => {
   runSequence('compile', 'static-files', 'watch', 'start');
+});
+
+gulp.task('test', () => {
+  runSequence('compile', 'static-files', 'watch', 'node-test');
 });
 
