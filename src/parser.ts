@@ -1,7 +1,8 @@
 import * as Parjs from 'parjs';
 import * as T     from './lexdefs';
-import { layer, strlit, numlit, truthlit, cxxintp, coreintp, named } from './layer';
-import { Layer, Field, Param, Named, Atom } from './layer';
+import { layer, strlit, numlit, truthlit
+       , cxxintp, coreintp, named }         from './shape/layer';
+import { Layer, Field, Param, Named, Atom } from './shape/layer';
 import { LoudParser } from 'parjs';
 
 const P = Parjs.Parjs;

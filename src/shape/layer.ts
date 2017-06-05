@@ -1,5 +1,7 @@
 export type Field = Layer|Param;
 
+import indentWith = require('indent-string');
+
 export class Layer {
   readonly t = 'Layer';
 
@@ -36,10 +38,35 @@ export class Layer {
            , next:   Layer|null = null)
   { return new Layer(name, params, body, next); }
 
+  private ppHead(): string {
+    const params = this.params.map(x => x.toString()).join(', ');
+    return this.params.length === 0
+      ? `${this.name}` : `${this.name}(${params})`;
+  }
+
+  private ppEB(): string {
+    if (!this.next)
+      return `${this.ppHead()}`;
+
+    const tailPP = this.next.toString();
+    return `${this.ppHead()} ${tailPP}`;
+  }
+
+  private ppBody(): string {
+    return this.body.map(x => {
+      if (x.t === 'Layer')
+        return `- ${indentWith(x.toString(), 2).substr(2)}`;
+      else
+        return `- ${x.t}: ${x}`;
+    }).map(x => '  ' + x).join('\n');
+  }
+
   toString(): string {
-    return `Layer(${this.name}, [${this.params}]`
-      +    `, [${this.body.map(x => x.toString()).join(', ')}]`
-      +    `, ${this.next ? this.next.toString() : 'null'})`;
+    if (this.body.length === 0) {
+      return this.ppEB();
+    }
+
+    return `${this.ppHead()}\n${this.ppBody()}`;
   }
 }
 
@@ -50,7 +77,7 @@ export class StringLit {
 
   static of(_: string) { return new StringLit(_); }
 
-  toString() { return `StringLit(${this._})`; }
+  toString() { return `"${this._}"`; }
 }
 
 export class NumberLit {
@@ -60,7 +87,7 @@ export class NumberLit {
 
   static of(_: number) { return new NumberLit(_); }
 
-  toString() { return `NumberLit(${this._})`; }
+  toString() { return `${this._}`; }
 }
 
 export class BooleanLit {
@@ -70,7 +97,7 @@ export class BooleanLit {
 
   static of(_: boolean) { return new BooleanLit(_); }
 
-  toString() { return `BooleanLit(${this._})`; }
+  toString() { return `${this._}`; }
 }
 
 export class CxxInterpolation {
@@ -80,7 +107,7 @@ export class CxxInterpolation {
 
   static of(_: string) { return new CxxInterpolation(_); }
 
-  toString() { return `CxxInterpolation(${this._})`; }
+  toString() { return `Cxx {${this._}}`; }
 }
 
 export class CoreInterpolation {
@@ -90,7 +117,7 @@ export class CoreInterpolation {
 
   static of(_: string) { return new CoreInterpolation(_); }
 
-  toString() { return `CoreInterpolation(${this._})`; }
+  toString() { return `Core {${this._}}`; }
 }
 
 export type  Atom = BooleanLit
@@ -108,7 +135,7 @@ export class Named {
   static of(k: string, v: Atom) { return new Named(k, v); }
 
   toString(): string {
-    return `Pair (${this.k}, ${this.v})`;
+    return `< ${this.k} : ${this.v} >`;
   }
 }
 

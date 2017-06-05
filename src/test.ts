@@ -1,5 +1,5 @@
-import * as X from './shape/parser';
-import * as T from './shape/lexdefs';
+import * as X from './parser';
+import * as T from './lexdefs';
 import * as Parjs from 'parjs';
 import * as readline from 'readline';
 require('colors');
@@ -27,12 +27,19 @@ const allParsers : [string, Parser][] = [ [ "X.truthP  ", X.truthP   ]
                                         , [ "X.layerP  ", X.layerP ]
                                         , [ "X.layersP ", X.layersP ] ]
 
+const print = (r: any): string => {
+  if (Array.isArray(r))
+    return r.map(print).join('\n');
+  else
+    return r.toString();
+}
 const test = (src: string, parsers: [string, Parser][] = allParsers) => {
   for (const [ name, p ] of parsers) {
     const r = p.parse(src);
 
     if (r.kind === Parjs.ReplyKind.OK) {
-      ok(`using ${name}: OK: ${r.value}`);
+      ok(`using ${name}: OK`);
+      console.log(print(r.value));
     } else {
       error(`using ${name}: Failed.`);
       console.log(r.toString());
@@ -53,11 +60,13 @@ define-routine "super-awesome-routine" where {
     member "s" type "int";
   }
 
-  main {
+  main seq {
     repeat 5 seq {
       delay 100 "ticks";
-      goto "there";
+      goto "there"
     }
+
+    fork { do "A" Yes; then "B" 0 Ok; }
   }
 }
 

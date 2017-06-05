@@ -9,11 +9,23 @@ export const numbers = `0123456789`;
 export const alphas    = lowers + uppers;
 export const alphaNums = alphas + numbers;
 
-export const leadingSyms   = '<>/~-_+=:';
+export const leadingSyms   = '';
 export const followingSyms = `'@&^-_#<>/~=?`;
 
 export const leadingChrs   = alphas + leadingSyms;
 export const followingChrs = alphaNums + followingSyms;
+
+
+// Identifier
+export const identifierP = P
+  .anyCharOf(leadingChrs)
+  .then(P.anyCharOf(followingChrs).many())
+  .str;
+
+export const lowerIdP = P
+  .anyCharOf(lowers)
+  .then(P.anyCharOf(followingChrs).many())
+  .str;
 
 export const    spaceChrs =     ' \t';
 export const spaceEolChrs = ' \t\r\n';
@@ -66,12 +78,6 @@ export const       colonQ = P.string(':').q;
 export const   semiColonQ = P.string(';').q;
 export const       commaQ = P.string(',').q;
 
-// Identifier
-export const identifierP = P
-  .anyCharOf(leadingChrs)
-  .then(P.anyCharOf(followingChrs).many())
-  .str;
-
 
 const escapeSpecialKey = (x: string, to: string = x) =>
   P.string('\\' + x).map(_ => to);
@@ -86,7 +92,7 @@ const escapeP = escapeSpecialKey('"')
 
 const textP   = P.noCharOf('"');
 
-const strLitContentP = escapeP.or(textP).many();
+const strLitContentP = escapeP.or(textP).many().str;
 
 // TODO: string interpolation 2017-05-25 22:12:20
 export const stringLiteralP = strLitContentP
