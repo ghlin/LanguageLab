@@ -48,7 +48,7 @@ gulp.task('mocha', () => {
 
 gulp.task('watch', [ 'compile' ], () => {
   gulp.watch('src/**/*.ts', ['compile']);
-  gulp.watch('test/**/*.js', ['mocha']);
+  gulp.watch([ 'test/**/*.js', `${dist}/**/*.js` ], ['mocha']);
 });
 
 gulp.task('build', (callback) => {
