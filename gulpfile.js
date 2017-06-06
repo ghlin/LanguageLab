@@ -6,15 +6,11 @@ const nodemon     = require('gulp-nodemon');
 const sourcemaps  = require('gulp-sourcemaps');
 const log         = require('gulp-logger');
 const gutil       = require('gulp-util');
+const mocha       = require('gulp-mocha');
 const colors      = require('colors');
 const map         = require('map-stream');
 
 const dist = 'dist';
-
-const trace = (head) => map((file, next) => {
-  gutil.log(head, `*** ${file.path.green}`);
-  next(null, file);
-});
 
 gulp.task('clean', () => {
   return gulp.src(`${dist}/*`, { read: false }).pipe(clean());
@@ -39,18 +35,20 @@ gulp.task('static-files', () => {
 const nodemonEnv = { NODE_ENV: 'development'
                    , DEBUG:    'LL:*' };
 
-gulp.task('start', () =>
+gulp.task('run-repl', () =>
   nodemon({ script: `${dist}/main`
           , ext: 'js json'
           , env: nodemonEnv }));
 
-gulp.task('node-test', () =>
-  nodemon({ script: `${dist}/test`
-          , ext: 'js json'
-          , env: nodemonEnv }));
+gulp.task('mocha', () => {
+  return gulp.src([`test/**/*.js`], { read: false })
+    .pipe(mocha({ reporter: 'nyan' }))
+    .on('error', gutil.log);
+});
 
-gulp.task('watch', ['compile'], () => {
+gulp.task('watch', [ 'compile' ], () => {
   gulp.watch('src/**/*.ts', ['compile']);
+  gulp.watch('test/**/*.js', ['mocha']);
 });
 
 gulp.task('build', (callback) => {
@@ -58,10 +56,10 @@ gulp.task('build', (callback) => {
 });
 
 gulp.task('default', () => {
-  runSequence('compile', 'static-files', 'watch', 'start');
+  runSequence('compile', 'static-files', 'watch', 'mocha');
 });
 
-gulp.task('test', () => {
-  runSequence('compile', 'static-files', 'watch', 'node-test');
+gulp.task('repl', () => {
+  runSequence('compile', 'static-files', 'watch', 'run-repl');
 });
 
