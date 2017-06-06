@@ -1,12 +1,12 @@
 {
   "name": "ll",
   "version": "1.0.0",
-  "description": "",
+  "description": "toy language for STG game generation",
   "main": "dist/main.js",
   "scripts": {
-    "test": "node dist/test.js"
+    "test": "mocha test --reporter=nyan"
   },
-  "author": "",
+  "author": "ghlin",
   "license": "ISC",
   "dependencies": {
     "colors": "^1.1.2",
@@ -23,7 +23,10 @@
     "gulp-logger": "0.0.2",
     "gulp-mocha": "^4.3.1",
     "gulp-nodemon": "^2.2.1",
+    "gulp-sourcemaps": "^2.6.0",
     "gulp-typescript": "^3.1.6",
+    "gulp-util": "^3.0.8",
+    "map-stream": "0.0.7",
     "mocha": "^3.4.2",
     "run-sequence": "^1.2.2",
     "typescript": "^2.3.2"
