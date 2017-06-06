@@ -56,20 +56,27 @@ a b c d "Yes";
 
 define-routine "super-awesome-routine" where {
   requires-shapes {
-    component "stateComponent";
-    member "s" type "int";
+    component "stateComponent"
+    member "s" type "int"
   }
 
   main seq {
     repeat 5 seq {
-      delay 100 "ticks";
+      delay 100 "ticks"
       goto "there"
     }
 
     fork { do "A" Yes; then "B" 0 Ok; }
+
+    cxx-interp { $\${ __update(this) } }
   }
 }
 
+no semi-colon last line {
+  yes no semi-colon Yes
+  this here wow "Good"
+  "Wow"
+}
 
 `
 , [['a', X.layersP]]);

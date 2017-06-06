@@ -1,11 +1,11 @@
-import * as Parjs from 'parjs';
-import * as T     from './lexdefs';
+import * as Parjs                 from 'parjs';
+import { LoudParser, Parjs as P } from 'parjs';
+
 import { layer, strlit, numlit, truthlit
        , cxxintp, coreintp, named }         from './shape/layer';
 import { Layer, Field, Param, Named, Atom } from './shape/layer';
-import { LoudParser } from 'parjs';
+import * as T from './lexdefs';
 
-const P = Parjs.Parjs;
 const { string: lit } = P;
 
 // {{{ Boolean literal
@@ -86,14 +86,17 @@ class LayerComponent {
 }
 
 const layerNameP       = T.lowerIdP.map(x => new LayerComponent(x));
-const layerWithParamsP = T.lowerIdP.then(paramsP).map(([x, p]) =>
-  new LayerComponent(x, p));
+const layerWithParamsP = T.lowerIdP
+  .then(T.spacesQ)
+  .then(paramsP)
+  .map(([x, p]) => new LayerComponent(x, p));
+
 const layerComponentP  = layerWithParamsP.soft.or(layerNameP);
 
 type LeadingComponent  = Atom|LayerComponent;
 type LeadingComponents = LeadingComponent[];
 
-const lcSepP = T.spacesQ.then(P.anyCharOf(';{')).not
+const lcSepP = T.spacesQ.then(P.anyCharOf(';{}')).not
   .then(T.spacesQ);
 export const leadingComponentP = layerComponentP.or(literalP)
   .manySepBy(lcSepP);
@@ -156,7 +159,8 @@ export const layerP: LoudParser<Field> = literalP.or(
 
           return layerP.manySepBy(sepP).then(T.spaceEolsQ.then(lit('}').q))
             .map(body => build(components, body));
-        }));
+        }))
+        .orVal(build(components, []));
   }));
 // }}}
 
