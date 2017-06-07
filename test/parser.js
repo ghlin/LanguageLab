@@ -243,7 +243,42 @@ describe('parser', () => {
     });
   });
 
-  describe('layersP', () => { });
+  describe('layersP', () => {
+    it('should parse a bunch of layers', () => {
+      const src0 = [ '"starts-with-literal"'
+                   , ''
+                   , 'inline-def Yes'
+                   , ''
+                   , 'with-semi-colon Yes;'
+                   , 'no-empty-line-sep'
+                   , ''
+                   , 'complex-one here("with arguments", v: Yes) {'
+                   , '  nested { inline }'
+                   , '  "Literal, and semi-colon";'
+                   , '}' ].join('\n');
+      const str0 = [ [ '"starts-with-literal"' ].join('\n')
+                   , [ 'inline-def(true)' ].join('\n')
+                   , [ 'with-semi-colon(true)' ].join('\n')
+                   , [ 'no-empty-line-sep' ].join('\n')
+                   , [ 'complex-one here("with arguments", < v : true >)'
+                     , '  - nested'
+                     , '    - inline'
+                     , '  - StringLit: "Literal, and semi-colon"' ].join('\n') ];
+
+      const r = layersP.parse(src0);
+
+      expect(r.kind).to.equal(ok);
+      expect(r.value.map(x => `${x}`)).to.deep.equal(str0);
+    });
+
+    it('should also parse empty lines', () => {
+      const r = layersP.parse('');
+
+      expect(r.kind).to.equal(ok);
+      expect(r.value).to.be.a('Array');
+      expect(r.value).to.be.lengthOf(0);
+    });
+  });
 });
 
 

@@ -156,8 +156,7 @@ function build( components: LeadingComponents
 
 // {{{ layer|field
 export const layerP: LoudParser<Field> = literalP
-  .then(lit(';').many(0, 1).q).or(
-  leadingComponentP
+  .then(lit(';').many(0, 1).q).or(P.eof.not.then(leadingComponentP
     .then(T.spacesQ)
     .thenChoose((components) => {
       return P.anyCharOf('\n;').q.map(() => build(components, []))
@@ -169,7 +168,7 @@ export const layerP: LoudParser<Field> = literalP
             .map(body => build(components, body));
         }))
         .orVal(build(components, []));
-  }));
+  })));
 // }}}
 
 // {{{ main parser
