@@ -31,7 +31,7 @@ const coreExpP  = lit('{').q
 export const coreRawP  = coreExpP.or(coreNameP).map(coreintp);
 // }}}
 
-const interpolationP = lit('$').q
+export const interpolationP = lit('$').q
   .then(lit('$').q.then(cxxRawP).or(coreRawP));
 // }}}
 
@@ -137,6 +137,12 @@ function buildLayer(components: LeadingComponents): Layer {
 
 function build( components: LeadingComponents
               , body: Field[]): Layer {
+  if (components.length === 0)
+    throw new Error(`empty components!`);
+
+  if (components[0].t !== 'LayerComponent')
+    throw new Error(`first component should be a layer!`);
+
   const addBody = (l: Layer, body: Field[]): Layer => {
     if (!l.next)
       return layer(l.name, l.params, l.body.concat(body));
@@ -149,13 +155,15 @@ function build( components: LeadingComponents
 // }}}
 
 // {{{ layer|field
-export const layerP: LoudParser<Field> = literalP.or(
+export const layerP: LoudParser<Field> = literalP
+  .then(lit(';').many(0, 1).q).or(
   leadingComponentP
     .then(T.spacesQ)
     .thenChoose((components) => {
       return P.anyCharOf('\n;').q.map(() => build(components, []))
         .or(lit('{').then(T.spaceEolsQ).thenChoose(() => {
-          const sepP = T.spaceEolsQ.then(lit('}')).not.then(T.spaceEolsQ);
+          const sepP = T.spaceEolsQ.then(lit('}')).not
+            .then(T.spaceEolsQ);
 
           return layerP.manySepBy(sepP).then(T.spaceEolsQ.then(lit('}').q))
             .map(body => build(components, body));
