@@ -42,8 +42,7 @@ gulp.task('run-repl', () =>
 
 gulp.task('mocha', () => {
   return gulp.src([`test/**/*.js`], { read: false })
-    .pipe(mocha({ reporter: 'nyan' }))
-    .on('error', gutil.log);
+    .pipe(mocha({ reporter: process.env.REPORTER || 'nyan' }));
 });
 
 gulp.task('watch', [ 'compile' ], () => {
